@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ public class RemindersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminders);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -34,14 +36,14 @@ public class RemindersActivity extends AppCompatActivity {
         //The arrayAdatper is the controller in our
         //model-view-controller relationship. (controller)
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-            //context
-                    this,
-            //layout (view)
-                    R.layout.reminders_row,
-            //row (view)
-                    R.id.row_text,
-            //data (model) with bogus data to test our listview
-                    new String[]{"first record", "second record", "third record", "fourth record", "fifth record"});
+                //context
+                this,
+                //layout (view)
+                R.layout.reminders_row,
+                //row (view)
+                R.id.row_text,
+                //data (model) with bogus data to test our listview
+                new String[]{"first record", "second record", "third record", "fourth record", "fifth record"});
         mListView.setAdapter(arrayAdapter);
     }
 
@@ -54,16 +56,17 @@ public class RemindersActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_new:
+                Log.d(getLocalClassName(), "create new Reminder");
+                return true;
+            case R.id.action_exit:
+                Log.d(getLocalClassName(), "exit App");
+                finish();
+                return true;
+            default:
+                return false;
         }
 
-        return super.onOptionsItemSelected(item);
     }
 }
