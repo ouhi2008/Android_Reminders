@@ -1,5 +1,6 @@
 package com.apress.gerber.reminders;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,17 +13,53 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.sql.SQLException;
+
 public class RemindersActivity extends AppCompatActivity {
     private ListView mListView;
+    private RemindersDbAdapter mDbAdapter;
+    private RemindersSimpleCursorAdapter mCursorAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminders);
 
+        mListView = (ListView) findViewById(R.id.reminders_list_view);
+
+        mListView.setDivider(null);
+        mDbAdapter=new RemindersDbAdapter(this);
+        try {
+            mDbAdapter.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Cursor cursor = mDbAdapter.fetchAllReminders();
+        String[] from = new String[]{
+                RemindersDbAdapter.COL_CONTENT
+        };
+        int[] to = new int[] { R.id.row_text };
+
+        mCursorAdapter = new RemindersSimpleCursorAdapter(RemindersActivity.this,R.layout.reminders_row,cursor,from,to,0);
+        mListView.setAdapter(mCursorAdapter);
+//        //The arrayAdatper is the controller in our
+//        //model-view-controller relationship. (controller)
+//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+//                //context
+//                this,
+//                //layout (view)
+//                R.layout.reminders_row,
+//                //row (view)
+//                R.id.row_text,
+//                //data (model) with bogus data to test our listview
+//                new String[]{"first record", "second record", "third record", "fourth record", "fifth record"});
+//        mListView.setAdapter(arrayAdapter);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,19 +69,6 @@ public class RemindersActivity extends AppCompatActivity {
             }
         });
 
-        mListView = (ListView) findViewById(R.id.reminders_list_view);
-        //The arrayAdatper is the controller in our
-        //model-view-controller relationship. (controller)
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                //context
-                this,
-                //layout (view)
-                R.layout.reminders_row,
-                //row (view)
-                R.id.row_text,
-                //data (model) with bogus data to test our listview
-                new String[]{"first record", "second record", "third record", "fourth record", "fifth record"});
-        mListView.setAdapter(arrayAdapter);
     }
 
     @Override
