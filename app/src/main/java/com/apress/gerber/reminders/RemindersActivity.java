@@ -1,17 +1,22 @@
 package com.apress.gerber.reminders;
 
+
+import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.sql.SQLException;
 
@@ -28,7 +33,7 @@ public class RemindersActivity extends AppCompatActivity {
 
         mListView = (ListView) findViewById(R.id.reminders_list_view);
         mListView.setDivider(null);
-        mDbAdapter=new RemindersDbAdapter(this);
+        mDbAdapter = new RemindersDbAdapter(this);
         try {
             mDbAdapter.open();
         } catch (SQLException e) {
@@ -36,7 +41,7 @@ public class RemindersActivity extends AppCompatActivity {
         }
 
         //TEST DATA
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             mDbAdapter.deleteAllReminders();
             insertSomeReminders();
         }
@@ -73,6 +78,37 @@ public class RemindersActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int masterListPosition, long id) {
+                //Toast.makeText(RemindersActivity.this,"clicked "+position,Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(RemindersActivity.this);
+                ListView modeListView = new ListView(RemindersActivity.this);
+                String[] modes = new String[]{"Edit Reminder", "Delete Reminder"};
+                ArrayAdapter<String> modeAdapter = new ArrayAdapter<>(RemindersActivity.this,
+                        android.R.layout.simple_list_item_1, android.R.id.text1, modes);
+                modeListView.setAdapter(modeAdapter);
+                builder.setView(modeListView);
+                final Dialog dialog = builder.create();
+                dialog.show();
+                modeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //edit reminder
+                        if (position == 0) {
+                            Toast.makeText(RemindersActivity.this, "edit "
+                                    + masterListPosition, Toast.LENGTH_SHORT).show();
+                        //delete reminder
+                        } else {
+                            Toast.makeText(RemindersActivity.this, "delete "
+                                    + masterListPosition, Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.dismiss();
+                    }
+                });
             }
         });
 
