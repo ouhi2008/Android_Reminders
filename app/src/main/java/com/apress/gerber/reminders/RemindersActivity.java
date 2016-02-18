@@ -27,7 +27,6 @@ public class RemindersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reminders);
 
         mListView = (ListView) findViewById(R.id.reminders_list_view);
-
         mListView.setDivider(null);
         mDbAdapter=new RemindersDbAdapter(this);
         try {
@@ -36,14 +35,21 @@ public class RemindersActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        //TEST DATA
+        if(savedInstanceState == null){
+            mDbAdapter.deleteAllReminders();
+            insertSomeReminders();
+        }
+
         Cursor cursor = mDbAdapter.fetchAllReminders();
         String[] from = new String[]{
                 RemindersDbAdapter.COL_CONTENT
         };
-        int[] to = new int[] { R.id.row_text };
-
-        mCursorAdapter = new RemindersSimpleCursorAdapter(RemindersActivity.this,R.layout.reminders_row,cursor,from,to,0);
+        int[] to = new int[]{R.id.row_text};
+        mCursorAdapter = new RemindersSimpleCursorAdapter(RemindersActivity.this, R.layout.reminders_row, cursor, from, to, 0);
         mListView.setAdapter(mCursorAdapter);
+        mDbAdapter.close();
+
 //        //The arrayAdatper is the controller in our
 //        //model-view-controller relationship. (controller)
 //        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
@@ -60,6 +66,7 @@ public class RemindersActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +76,25 @@ public class RemindersActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void insertSomeReminders() {
+        //Add some data
+        mDbAdapter.createReminder("Buy Learn Android Studio", true);
+        mDbAdapter.createReminder("Send Dad birthday gift", false);
+        mDbAdapter.createReminder("Dinner at the Gage on Friday", false);
+        mDbAdapter.createReminder("String squash racket", false);
+        mDbAdapter.createReminder("Shovel and salt walkways", false);
+        mDbAdapter.createReminder("Prepare Advanced Android syllabus", true);
+        mDbAdapter.createReminder("Buy new office chair", false);
+        mDbAdapter.createReminder("Call Auto-body shop for quote", false);
+        mDbAdapter.createReminder("Renew membership to club", false);
+        mDbAdapter.createReminder("Buy new Galaxy Android phone", true);
+        mDbAdapter.createReminder("Sell old Android phone - auction", false);
+        mDbAdapter.createReminder("Buy new paddles for kayaks", false);
+        mDbAdapter.createReminder("Call accountant about tax returns", false);
+        mDbAdapter.createReminder("Buy 300,000 shares of Google", false);
+        mDbAdapter.createReminder("Call the Dalai Lama back", true);
     }
 
     @Override
