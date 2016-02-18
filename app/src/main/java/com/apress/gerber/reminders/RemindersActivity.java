@@ -37,6 +37,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 
 public class RemindersActivity extends AppCompatActivity {
@@ -120,16 +121,17 @@ public class RemindersActivity extends AppCompatActivity {
                             mDbAdapter.deleteReminderById(getIdFromPosition(masterListPosition));
                             mCursorAdapter.changeCursor(mDbAdapter.fetchAllReminders());
                         }else{
-                            final Date today = new Date();
                             TimePickerDialog.OnTimeSetListener listener = new TimePickerDialog.OnTimeSetListener(){
-
                                 @Override
                                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                    Date alarm = new Date(today.getYear(),today.getMonth(),today.getDate(),hourOfDay,minute);
-                                    scheduleReminder(alarm.getTime(),reminder.getContent());
+                                    final Calendar alarmTime = Calendar.getInstance();
+                                    alarmTime.set(Calendar.HOUR,hourOfDay);
+                                    alarmTime.set(Calendar.MINUTE,minute);
+                                    scheduleReminder(alarmTime.getTimeInMillis(),reminder.getContent());
                                 }
                             };
-                            new TimePickerDialog(RemindersActivity.this,null,today.getHours(),today.getMinutes(),false).show();
+                            final Calendar today = Calendar.getInstance();
+                            new TimePickerDialog(RemindersActivity.this,null,today.get(Calendar.HOUR),today.get(Calendar.MINUTE),false).show();
                         }
                         dialog.dismiss();
                     }
